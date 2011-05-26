@@ -1,0 +1,5 @@
+To use:
+
+1. Place these files anywhere
+2. Edit .init_ec2 (instructions inline)
+3. ./connect_by_name.sh <Name of instance>

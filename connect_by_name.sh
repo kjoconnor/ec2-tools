@@ -43,15 +43,18 @@ dns=`echo "$ec2info" | grep 'INSTANCE' | grep $instanceID | cut -f 4`
 # Get the keypairname for this instance
 key=`echo "$ec2info" | grep 'INSTANCE' | grep $instanceID | cut -f 7`
 
+# OSX only:
 # AppleScript to launch a new terminal window connecting to the supplied
 # DNS record with the supplied keyname
-osascript 2>/dev/null <<EOF
-	tell application "Terminal"
-		activate
-		do script with command "ssh -i $KEYDIR/$key.pem $USERNAME@$dns"
-	end tell
-EOF
+#osascript 2>/dev/null <<EOF
+#	tell application "Terminal"
+#		activate
+#		do script with command "ssh -i $KEYDIR/$key.pem $USERNAME@$dns"
+#	end tell
+#EOF
 
-# TODO: add an option to connect in the same window?
+# Any Unix system:
+ssh -i $KEYDIR/$key.pem $USERNAME@$dns
+
 # TODO: add a menu to pick which instance to connect to when you
 #	get multiple choices, instead of calling the user a dummy

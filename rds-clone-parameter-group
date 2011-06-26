@@ -1,0 +1,64 @@
+#!/bin/bash
+
+# See .init_rds file for config details, this describes your paths, keys, etc.
+source .init_rds
+
+if [ "$#" -ne "2" ]; then
+	echo "Usage: `basename $0` source-parameter-group dest-parameter-group"
+	exit 1
+fi
+
+echo "Getting parameters of source group ($1)"
+# Get parameters of source
+SOURCE_PARAMS=`rds-describe-db-parameters $1 2>&1`
+
+if [ "$?" -ne "0" ]; then
+	echo "An error has occurred when trying to get source DB parameters - are you sure you provided the correct source name?"
+	echo "$SOURCE_PARAMS"
+	exit 1
+fi
+
+echo "Getting engine type of source ($1)"
+# Get engine
+SOURCE_ENGINE=`rds-describe-db-parameter-groups | grep $1 | awk '{print $3;}' 2>&1`
+
+if [ "$?" -ne "0" ]; then
+	echo "An error has occurred during parameter group describe."
+	echo "$SOURCE_ENGINE"
+	exit 1
+fi
+
+echo "Creating new parameter group ($2)"
+# Create new param group
+CREATE=`rds-create-db-parameter-group $2 -f $SOURCE_ENGINE -d "Clone of $1" 2>&1`
+
+if [ "$?" -ne "0" ]; then
+	echo "An error has occurred during new parameter group creation."
+	echo "$CREATE"
+	exit 1
+fi
+
+echo "Getting new group parameters ($2)"
+DEST_PARAMS=`rds-describe-db-parameters $2 2>/dev/null`
+
+DIFFOUTPUT=`diff <(echo "$SOURCE_PARAMS") <(echo "$DEST_PARAMS") | egrep '^<' | awk '{print \$3","\$4;}'`
+
+PARAMETERS=""
+
+for item in $DIFFOUTPUT
+do
+	key=`echo $item | cut -d, -f1`
+	value=`echo $item | cut -d, -f2`
+	PARAMETERS="$PARAMETERS --parameters \"name=$key, value=$value, method=immediate\""
+done
+
+echo "Applying parameters to newly created group ($2)"
+MODIFY_OUTPUT=`rds-modify-db-parameter-group $2 $PARAMETERS`
+
+if [ "$?" -ne "0" ]; then
+	echo "Error occurred while modifying new group parameters."
+	echo "$MODIFY_OUTPUT"
+	exit 1
+fi
+
+echo "New group created ($2)"

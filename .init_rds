@@ -1,0 +1,10 @@
+# .init_rds - This should hold all your stuff regarding keys and paths
+
+# Path to RDS binaries (leave out the last /bin)
+# export AWS_RDS_HOME=~/Desktop/path/to/rds
+
+# Add RDS stuff to PATH
+# export PATH=$PATH:$AWS_RDS_HOME/bin
+
+# credential-file
+# export AWS_CREDENTIAL_FILE=$AWS_RDS_HOME/.credential-file

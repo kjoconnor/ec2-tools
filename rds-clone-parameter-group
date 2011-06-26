@@ -41,10 +41,12 @@ fi
 echo "Getting new group parameters ($2)"
 DEST_PARAMS=`rds-describe-db-parameters $2 2>/dev/null`
 
+# Compare the files, any differences get the source group's value and place into DIFFOUTPUT
 DIFFOUTPUT=`diff <(echo "$SOURCE_PARAMS") <(echo "$DEST_PARAMS") | egrep '^<' | awk '{print \$3","\$4;}'`
 
 PARAMETERS=""
 
+# Loop through DIFFOUTPUT and create a parameter string to use with rds-modify-db-parameter-group
 for item in $DIFFOUTPUT
 do
 	key=`echo $item | cut -d, -f1`

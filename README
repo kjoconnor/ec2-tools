@@ -1,5 +1,5 @@
 To use:
 
 1. Place these files anywhere
-2. Edit .init_ec2 (instructions inline)
-3. ./connect_by_name.sh <Name of instance>
+2. Edit .init_ec2 and/or .init_rds (instructions inline)
+3. See individual files for usage

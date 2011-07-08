@@ -15,7 +15,7 @@ source .init_ec2
 ec2info=`ec2-describe-instances`
 
 # Just pull out lines with the Name tag for now
-grepped=`echo "$ec2info" | grep Name | grep -i $1`
+grepped=`echo "$ec2info" | grep Name | grep -i "$1"`
 
 # No matches for supplied name
 if [ "$?" -eq "1" ]; then

@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# See .init_rds file for config details, this describes your paths, keys, etc.
-source .init_rds
+# Set the path to your credential file here as described in the AWS docs
+export AWS_CREDENTIAL_FILE=/opt/aws/.credential_file
 
 if [ "$#" -ne "2" ]; then
 	echo "Usage: `basename $0` source-parameter-group dest-parameter-group"
@@ -64,3 +64,4 @@ if [ "$?" -ne "0" ]; then
 fi
 
 echo "New group created ($2)"
+unset AWS_CREDENTIAL_FILE
